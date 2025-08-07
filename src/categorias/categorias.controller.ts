@@ -50,6 +50,7 @@ export class CategoriasController {
     type: UpdateCategoriaDto
   })
   update(@Param('id') id: string, @Body() updateCategoriaDto: UpdateCategoriaDto) {
+    console.log(updateCategoriaDto)
     return this.categoriasService.update(+id, updateCategoriaDto);
   }
 
