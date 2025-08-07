@@ -22,5 +22,5 @@ export class CreateTodoDto {
     @IsNotEmpty()
     @IsNumber()
     @Min(1)
-    categoriaId: string
+    categoriaId: number
 }
