@@ -18,6 +18,6 @@ export class CategoriaEntity {
    @CreateDateColumn()
     createdAt?: Date
 
-   @OneToMany(()=> TodosEntity, (todo) => todo.categoria)
+   @OneToMany(()=> TodosEntity, (todo) => todo.categoria, {cascade:true})
     todos: TodosEntity[] 
 }

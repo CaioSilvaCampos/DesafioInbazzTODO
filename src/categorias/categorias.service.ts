@@ -4,6 +4,7 @@ import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 import { Repository } from 'typeorm';
 import { CategoriaEntity } from './entities/categoria.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import e from 'express';
 
 @Injectable()
 export class CategoriasService {
@@ -57,8 +58,18 @@ export class CategoriasService {
     return categoriaAtualizada
   }
 
-  async remove(id: number):Promise<void> {
+  async remove(id: number){
     const categoria = await this.categoriaExiste(id)
-    const resultado = this.categoriaRepository.delete(id)
+    try{
+      const result = await this.categoriaRepository.delete(categoria.id)
+      console.log(result)
+      return {
+        message: 'Categoria deletada com sucesso',
+      }
+    }
+    catch(error) {
+      console.error(error)
+      throw new InternalServerErrorException('Erro ao deletar uma categoria')
+    }
   }
 }

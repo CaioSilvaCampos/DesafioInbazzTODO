@@ -14,7 +14,7 @@ export class CreateTodoDto {
     descricao: string
 
     @ApiProperty()
-    @IsEnum({TodoStatusEnum})
+    @IsEnum(TodoStatusEnum)
     @IsNotEmpty()
     status: TodoStatusEnum
 
