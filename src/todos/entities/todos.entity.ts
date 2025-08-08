@@ -20,7 +20,7 @@ export class TodosEntity {
     @Column({enum: TodoStatusEnum})
     status: TodoStatusEnum
 
-    @ManyToOne(()=> CategoriaEntity, (categoria) => categoria.todos, {eager: true})
+    @ManyToOne(()=> CategoriaEntity, (categoria) => categoria.todos, {eager: true, onDelete: 'CASCADE'})
     categoria: CategoriaEntity
 
     @CreateDateColumn()

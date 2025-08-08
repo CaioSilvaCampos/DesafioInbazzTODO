@@ -2,65 +2,67 @@ import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
 import { CategoriasService } from './categorias.service';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
-import { ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
-@ApiTags('Categories')
+@ApiTags('Categorias')
 @Controller('categories')
 export class CategoriasController {
   constructor(private readonly categoriasService: CategoriasService) {}
 
   @Post()
-  @ApiOperation({
-    summary: 'Criar uma nova categoria'
-  })
-  @ApiBody({
-    type: CreateCategoriaDto
-  })
+  @ApiOperation({ summary: 'Criar uma nova categoria' })
+  @ApiBody({ type: CreateCategoriaDto })
+  @ApiResponse({ status: 201, description: 'Categoria criada com sucesso' })
+  @ApiResponse({ status: 400, description: 'Categoria com nome duplicado' })
+  @ApiResponse({ status: 500, description: 'Erro ao criar categoria' })
   create(@Body() createCategoriaDto: CreateCategoriaDto) {
     return this.categoriasService.create(createCategoriaDto);
   }
-  
+
   @Get()
-  @ApiOperation({
-    summary: 'Listar todas as categorias'
-  })
+  @ApiOperation({ summary: 'Listar todas as categorias' })
+  @ApiResponse({ status: 200, description: 'Lista de categorias retornada com sucesso' })
+  @ApiResponse({ status: 404, description: 'Nenhuma categoria encontrada' })
   findAll() {
     return this.categoriasService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({
-    summary: 'Listar uma categoria especifíca'
-  })
-  @ApiParam({
-    name: 'id', description: 'id da categoria', example: 1
-  })
+  @ApiOperation({ summary: 'Listar uma categoria específica' })
+  @ApiParam({ name: 'id', description: 'ID da categoria', example: 1 })
+  @ApiResponse({ status: 200, description: 'Categoria encontrada com sucesso' })
+  @ApiResponse({ status: 404, description: 'Categoria não encontrada' })
   findOne(@Param('id') id: string) {
     return this.categoriasService.findOne(+id);
   }
 
   @Put(':id')
-  @ApiOperation({
-    summary: 'Atualizar informações de uma categoria'
-  })
-  @ApiParam({
-    name: 'id', description: 'id da categoria', example: 1
-  })
-  @ApiBody({
-    type: UpdateCategoriaDto
-  })
-  update(@Param('id') id: string, @Body() updateCategoriaDto: UpdateCategoriaDto) {
-    console.log(updateCategoriaDto)
+  @ApiOperation({ summary: 'Atualizar informações de uma categoria' })
+  @ApiParam({ name: 'id', description: 'ID da categoria', example: 1 })
+  @ApiBody({ type: UpdateCategoriaDto })
+  @ApiResponse({ status: 200, description: 'Categoria atualizada com sucesso' })
+  @ApiResponse({ status: 400, description: 'Categoria com nome duplicado' })
+  @ApiResponse({ status: 404, description: 'Categoria não encontrada' })
+  @ApiResponse({ status: 500, description: 'Erro ao atualizar categoria' })
+  update(
+    @Param('id') id: string,
+    @Body() updateCategoriaDto: UpdateCategoriaDto,
+  ) {
     return this.categoriasService.update(+id, updateCategoriaDto);
   }
 
-  @ApiOperation({
-    summary: 'Excluir uma categoria'
-  })
-  @ApiParam({
-    name: 'id', description: 'id da categoria', example: 1
-  })
   @Delete(':id')
+  @ApiOperation({ summary: 'Excluir uma categoria' })
+  @ApiParam({ name: 'id', description: 'ID da categoria', example: 1 })
+  @ApiResponse({ status: 200, description: 'Categoria excluída com sucesso' })
+  @ApiResponse({ status: 404, description: 'Categoria não encontrada' })
+  @ApiResponse({ status: 500, description: 'Erro ao excluir categoria' })
   remove(@Param('id') id: string) {
     return this.categoriasService.remove(+id);
   }

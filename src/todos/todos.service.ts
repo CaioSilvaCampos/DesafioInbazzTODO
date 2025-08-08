@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TodosEntity } from './entities/todos.entity';
 import { Repository } from 'typeorm';
 import { CategoriasService } from 'src/categorias/categorias.service';
+import { NotFoundExceptionById } from 'src/common/exceptions/not-foundById.exception';
+import { TodosResponseDto } from './dto/todos-response.dto';
 
 @Injectable()
 export class TodosService {
@@ -19,27 +21,30 @@ export class TodosService {
   async todoExiste(id: number): Promise<TodosEntity>{
     const todo = await this.todoRepository.findOneBy({id})
     if(!todo){
-      throw new NotFoundException('Tarefa não encontrada')
+      throw new NotFoundExceptionById('Tarefa', id)
     }
     else{
       return todo
     }
   }
 
-  async create(createTodoDto: CreateTodoDto): Promise<TodosEntity> {
+  async create(createTodoDto: CreateTodoDto): Promise<TodosResponseDto> {
     const categoria = await this.categoriasService.categoriaExiste(createTodoDto.categoriaId);
     
-    const todo = this.todoRepository.create({
+    try{const todo = this.todoRepository.create({
       categoria,
       descricao: createTodoDto.descricao,
       status: createTodoDto.status,
       titulo: createTodoDto.titulo,
     });
 
-  return await this.todoRepository.save(todo);
+    return await this.todoRepository.save(todo);}
+    catch(error){
+      throw new InternalServerErrorException('Erro ao criar a tarefa')
+    }
   }
 
-  async findAll(): Promise<TodosEntity[]> {
+  async findAll(): Promise<TodosResponseDto[]> {
     const todos = await this.todoRepository.find()
     if(todos.length == 0){
       throw new NotFoundException('Não existem Tarefas cadastradas')
@@ -52,7 +57,7 @@ export class TodosService {
     return todo
   }
 
-  async update(id: number, updateTodoDto: UpdateTodoDto): Promise<TodosEntity> {
+  async update(id: number, updateTodoDto: UpdateTodoDto): Promise<TodosResponseDto> {
     const { categoriaId, ...todoDto } = updateTodoDto
     const todo = await this.todoExiste(id)
     if(updateTodoDto.categoriaId){

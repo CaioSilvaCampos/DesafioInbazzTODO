@@ -1,10 +1,13 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 import { Repository } from 'typeorm';
 import { CategoriaEntity } from './entities/categoria.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import e from 'express';
+import { NotFoundExceptionById } from 'src/common/exceptions/not-foundById.exception';
+import { NomeDuplicadoException } from './exceptions/nomeDuplicado.exception';
+import { CategoriaReponseDto } from './dto/categorias-response.dto';
 
 @Injectable()
 export class CategoriasService {
@@ -13,29 +16,35 @@ export class CategoriasService {
     private readonly categoriaRepository: Repository<CategoriaEntity>
   ){}
 
-  async create(createCategoriaDto: CreateCategoriaDto): Promise<CategoriaEntity> {
+  async create(createCategoriaDto: CreateCategoriaDto): Promise<CategoriaReponseDto> {
+    await this.validarNomeUnico(createCategoriaDto.nome)
     try {
     const categoria = this.categoriaRepository.create(createCategoriaDto);
-    const categoriaCriada = await this.categoriaRepository.save(categoria);
-    
-    return categoriaCriada
-
-  } catch (error) {
+    return await this.categoriaRepository.save(categoria);
+  } 
+   catch (error) {
     throw new InternalServerErrorException('Erro ao criar categoria');
   }
 }
+
+  async validarNomeUnico(nome: string): Promise<void>{
+    const categoria = await this.categoriaRepository.findOneBy({nome})
+    if(categoria){
+      throw new NomeDuplicadoException(nome)
+    }
+  }
 
   async categoriaExiste(id: number): Promise<CategoriaEntity>{
     const categoria = await this.categoriaRepository.findOneBy({id})
     
     if(!categoria){
-      throw new NotFoundException('Nenhuma categoria encontrada!')
+      throw new NotFoundExceptionById('Categoria', id)
     }
     
     return categoria
   }
 
-  async findAll(): Promise<CategoriaEntity[]> {
+  async findAll(): Promise<CategoriaReponseDto[]> {
     const categorias = await this.categoriaRepository.find()
     if(categorias.length == 0){
       throw new NotFoundException('Nenhuma categoria encontrada!')
@@ -45,12 +54,12 @@ export class CategoriasService {
     }
   }
 
-  async findOne(id: number): Promise<CategoriaEntity> {
+  async findOne(id: number): Promise<CategoriaReponseDto>{
     const categoria = await this.categoriaExiste(id)
     return categoria
   }
 
-  async update(id: number, updateCategoriaDto: UpdateCategoriaDto): Promise<CategoriaEntity> {
+  async update(id: number, updateCategoriaDto: UpdateCategoriaDto): Promise<CategoriaReponseDto> {
     console.log(updateCategoriaDto)
     const categoria = await this.categoriaExiste(id)
     Object.assign(categoria, updateCategoriaDto)
@@ -61,6 +70,7 @@ export class CategoriasService {
   async remove(id: number){
     const categoria = await this.categoriaExiste(id)
     try{
+      console.log(categoria)
       const result = await this.categoriaRepository.delete(categoria.id)
       console.log(result)
       return {
