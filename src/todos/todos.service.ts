@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { CategoriasService } from 'src/categorias/categorias.service';
 import { NotFoundExceptionById } from 'src/common/exceptions/not-foundById.exception';
 import { TodosResponseDto } from './dto/todos-response.dto';
+import { FiltroTodoDto } from './dto/filtro-todo.dto';
 
 @Injectable()
 export class TodosService {
@@ -44,12 +45,27 @@ export class TodosService {
     }
   }
 
-  async findAll(): Promise<TodosResponseDto[]> {
-    const todos = await this.todoRepository.find()
-    if(todos.length == 0){
-      throw new NotFoundException('Não existem Tarefas cadastradas')
+  async findAll(filtros: FiltroTodoDto) {
+    
+    const query = this.todoRepository.createQueryBuilder('todo')
+      .leftJoinAndSelect('todo.categoria', 'categoria');
+
+    if (filtros.status) {
+      query.andWhere('todo.status = :status', { status: filtros.status });
     }
-    return todos
+
+    if (filtros.categoriaId) {
+      const categoria = await this.categoriasService.categoriaExiste(filtros.categoriaId)
+      query.andWhere('categoria.id = :categoriaId', { categoriaId: categoria.id });
+    }
+
+    const tarefas = await query.getMany();
+
+    if (tarefas.length === 0) {
+      throw new NotFoundException('Nenhuma tarefa encontrada com os filtros informados');
+    }
+
+    return tarefas;
   }
 
   async findOne(id: number) {

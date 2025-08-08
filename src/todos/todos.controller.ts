@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { TodosService } from './todos.service';
+import { TodosResponseDto } from './dto/todos-response.dto';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiResponseProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiResponseProperty, ApiTags } from '@nestjs/swagger';
+import { FiltroTodoDto } from './dto/filtro-todo.dto';
+import { TodoStatusEnum } from './enum/todo.status.enum';
 
 @ApiTags('Todos')
 @Controller('todos')
@@ -27,17 +30,15 @@ export class TodosController {
   }
 
   @Get()
-  @ApiOperation({
-    summary: 'Listar todas as tarefas'
-  })
-  @ApiResponse({
-    status:200, description: 'Lista de tarefas retornadas com sucesso'
-  })
-  @ApiResponse({
-    status:404, description: 'Não existem tarefas cadastradas'
-  })
-  findAll() {
-    return this.todosService.findAll();
+  @ApiOperation({ summary: 'Listar todas as tarefas' })
+  @ApiResponse({ status: 200, description: 'Lista de tarefas retornadas com sucesso', type: [TodosResponseDto] })
+  @ApiResponse({ status: 404, description: 'Não existem tarefas cadastradas' })
+  @ApiQuery({ name: 'categoriaId', required: false, description: 'ID da categoria para filtrar tarefas', example:1 })
+  @ApiQuery({ name: 'status', required: false, description: 'Status da tarefa (pendente, concluida)', example:'concluida'})
+  async findAll(
+    @Query()filtros: FiltroTodoDto
+  ) {
+    return this.todosService.findAll(filtros);
   }
 
   @Get(':id')
