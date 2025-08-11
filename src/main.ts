@@ -13,7 +13,7 @@ async function bootstrap() {
   }))
 
   //Config do swagger
-  const documentBuilderConfig = new DocumentBuilder().setTitle('Todos API').setDescription('API para uma lista de tarefas').setVersion('1.0').build()
+  const documentBuilderConfig = new DocumentBuilder().setTitle('Todos API').setDescription('API para uma lista de tarefas').setVersion('1.0').addBearerAuth().build()
   const document = SwaggerModule.createDocument(app, documentBuilderConfig)
 
   SwaggerModule.setup('docs',app, document)

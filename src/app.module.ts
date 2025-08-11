@@ -4,6 +4,9 @@ import { PostgresConfigService } from 'config/postgres.config.service';
 import { ConfigModule } from '@nestjs/config';
 import { TodosModule } from './todos/todos.module';
 import { CategoriasModule } from './categorias/categorias.module';
+import { AuthModule } from './auth/auth.module';
+import { UsuarioModule } from './usuario/usuario.module';
+
 @Module({
   imports: [TypeOrmModule.forRootAsync({
       useClass: PostgresConfigService,
@@ -13,9 +16,10 @@ import { CategoriasModule } from './categorias/categorias.module';
       isGlobal:true
      }),
      TodosModule,
-     CategoriasModule
+     CategoriasModule,
+     AuthModule,
+     UsuarioModule
     ],
   controllers: [],
-  providers: [],
 })
 export class AppModule {}

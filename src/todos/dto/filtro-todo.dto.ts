@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsOptional } from "class-validator";
+import { IsEnum, IsInt, IsOptional, IsPositive } from "class-validator";
 import { TodoStatusEnum } from "../enum/todo.status.enum";
 import { Type } from "class-transformer";
 
@@ -11,6 +11,7 @@ export class FiltroTodoDto{
 
     @IsOptional()
     @Type(() => Number)
-    @IsInt({ message: 'categoriaId deve ser um número inteiro' })
+    @IsInt()
+    @IsPositive()
     categoriaId?: number;
 }
