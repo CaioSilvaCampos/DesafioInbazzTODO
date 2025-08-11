@@ -54,7 +54,7 @@ export class CategoriasController {
   @ApiParam({ name: 'id', description: 'ID da categoria', example: 1 })
   @ApiBody({ type: UpdateCategoriaDto })
   @ApiResponse({ status: 200, description: 'Categoria atualizada com sucesso' })
-  @ApiResponse({ status: 400, description: 'Categoria com nome duplicado' })
+  @ApiResponse({ status: 409, description: 'Categoria com nome duplicado' })
   @ApiResponse({ status: 404, description: 'Categoria não encontrada' })
   @ApiResponse({ status: 500, description: 'Erro ao atualizar categoria' })
   update(
