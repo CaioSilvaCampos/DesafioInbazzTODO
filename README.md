@@ -17,7 +17,7 @@ Antes de iniciar, certifique-se de ter instalado em sua máquina:
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/CaioSilvaCampos/desafio-inbazz.git
+   git clone https://github.com/CaioSilvaCampos/DesafioInbazzTODO.git
    cd desafio-inbazz
    ```
 
