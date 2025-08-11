@@ -59,6 +59,7 @@ export class TodosService {
       query.andWhere('categoria.id = :categoriaId', { categoriaId: categoria.id });
     }
 
+    query.orderBy('todo.createdAt', 'ASC')
     const tarefas = await query.getMany();
 
     if (tarefas.length === 0) {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards, BadRequestException } from '@nestjs/common';
 import { CategoriasService } from './categorias.service';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
@@ -19,8 +19,8 @@ export class CategoriasController {
 
   @Post()
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Criar uma nova categoria' })
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Criar uma nova categoria' })
   @ApiBody({ type: CreateCategoriaDto })
   @ApiResponse({ status: 201, description: 'Categoria criada com sucesso' })
   @ApiResponse({ status: 400, description: 'Categoria com nome duplicado' })
@@ -49,6 +49,8 @@ export class CategoriasController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Atualizar informações de uma categoria' })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiParam({ name: 'id', description: 'ID da categoria', example: 1 })
   @ApiBody({ type: UpdateCategoriaDto })
   @ApiResponse({ status: 200, description: 'Categoria atualizada com sucesso' })
@@ -59,10 +61,15 @@ export class CategoriasController {
     @Param('id') id: string,
     @Body() updateCategoriaDto: UpdateCategoriaDto,
   ) {
+    if (Object.keys(updateCategoriaDto).length === 0) {
+      throw new BadRequestException('O corpo da requisição não pode estar vazio');
+    }
     return this.categoriasService.update(+id, updateCategoriaDto);
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Excluir uma categoria' })
   @ApiParam({ name: 'id', description: 'ID da categoria', example: 1 })
   @ApiResponse({ status: 200, description: 'Categoria excluída com sucesso' })

@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query, UseGuards, BadRequestException } from '@nestjs/common';
 import { TodosService } from './todos.service';
 import { TodosResponseDto } from './dto/todos-response.dto';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiResponseProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiResponseProperty, ApiTags } from '@nestjs/swagger';
 import { FiltroTodoDto } from './dto/filtro-todo.dto';
 import { TodoStatusEnum } from './enum/todo.status.enum';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
 
 @ApiTags('Todos')
 @Controller('todos')
@@ -24,6 +25,8 @@ export class TodosController {
   @ApiResponse({
     status:500, description: 'Erro ao criar tarefa'
   })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @Post()
   create(@Body() createTodoDto: CreateTodoDto) {
     return this.todosService.create(createTodoDto);
@@ -59,6 +62,8 @@ export class TodosController {
   }
 
   @Put(':id')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary:'Atualizar os detalhes de uma tarefa'
   })
@@ -75,12 +80,17 @@ export class TodosController {
     type: UpdateTodoDto
   })
   update(@Param('id') id: string, @Body() updateTodoDto: UpdateTodoDto) {
+    if (Object.keys(updateTodoDto).length === 0) {
+      throw new BadRequestException('O corpo da requisição não pode estar vazio');
+    }
     return this.todosService.update(+id, updateTodoDto);
   }
 
   @ApiOperation({
     summary: 'Excluir uma tarefa'
   })
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiParam({
     name: 'id', description: 'id da tarefa', example: 1
   })

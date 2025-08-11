@@ -45,7 +45,11 @@ export class CategoriasService {
   }
 
   async findAll(): Promise<CategoriaReponseDto[]> {
-    const categorias = await this.categoriaRepository.find()
+    const categorias = await this.categoriaRepository.find({
+      order:{
+        createdAt: 'ASC'
+      }
+    })
     if(categorias.length == 0){
       throw new NotFoundException('Nenhuma categoria encontrada!')
     }
@@ -60,7 +64,6 @@ export class CategoriasService {
   }
 
   async update(id: number, updateCategoriaDto: UpdateCategoriaDto): Promise<CategoriaReponseDto> {
-    console.log(updateCategoriaDto)
     const categoria = await this.categoriaExiste(id)
     Object.assign(categoria, updateCategoriaDto)
     const categoriaAtualizada = await this.categoriaRepository.save(categoria)
@@ -70,15 +73,12 @@ export class CategoriasService {
   async remove(id: number){
     const categoria = await this.categoriaExiste(id)
     try{
-      console.log(categoria)
       const result = await this.categoriaRepository.delete(categoria.id)
-      console.log(result)
       return {
         message: 'Categoria deletada com sucesso',
       }
     }
     catch(error) {
-      console.error(error)
       throw new InternalServerErrorException('Erro ao deletar uma categoria')
     }
   }

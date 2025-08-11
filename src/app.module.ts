@@ -6,6 +6,7 @@ import { TodosModule } from './todos/todos.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { AuthModule } from './auth/auth.module';
 import { UsuarioModule } from './usuario/usuario.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [TypeOrmModule.forRootAsync({
@@ -20,6 +21,6 @@ import { UsuarioModule } from './usuario/usuario.module';
      AuthModule,
      UsuarioModule
     ],
-  controllers: [],
+  controllers: [AppController],
 })
 export class AppModule {}
