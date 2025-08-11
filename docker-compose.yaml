@@ -13,7 +13,7 @@ services:
     networks:
       - postgres
     volumes:
-      - .:/app
+      - ./src:/app/src
       - /app/node_modules
 
   postgres:
