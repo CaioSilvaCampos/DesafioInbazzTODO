@@ -22,10 +22,7 @@ Antes de iniciar, certifique-se de ter instalado em sua máquina:
    ```
 
 2. **Crie o arquivo `.env`**  
-   Use o `.env.example` como base:
-   ```bash
-   cp .env.example .env
-   ```
+   Use o `.env.example` como base
    No `.env`, configure as variáveis, por exemplo:
    ```env
    DATABASE_HOST=db
